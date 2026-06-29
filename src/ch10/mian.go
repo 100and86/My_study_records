@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"go_study/github"
+	"go_study/src/ch10/github"
 )
 
 func main(){
