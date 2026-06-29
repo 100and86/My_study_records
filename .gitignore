@@ -1,0 +1,30 @@
+# Build outputs
+bin/
+dist/
+build/
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace / vendor choices
+go.work
+go.work.sum
+vendor/
+
+# Coverage / profiling
+coverage.out
+*.cover
+*.prof
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
