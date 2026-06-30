@@ -3,37 +3,53 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"os"
+	"path/filepath"
 )
 
-type User struct {
-	Name string
-	Age  int
+type Article struct {
+	Title  string
+	Author string
+}
+
+type Page struct {
+	Title    string
+	Articles []Article
 }
 
 const tpl = `
-	<p>姓名：{{.Name}}</p>
-	<p>年龄：{{.Age}}</p>
-	`
+<h1>{{.Title}}</h1>
+
+<ul>
+{{range .Articles}}
+  <li>{{.Title}} - 作者：{{.Author}}</li>
+{{end}}
+</ul>
+`
 
 func main() {
-	user := User{
-		Name: "张三",
-		Age:  18,
+	page := Page{
+		Title: "文章列表",
+		Articles: []Article{
+			{Title: "Go入门", Author: "张三"},
+			{Title: "HTML学习", Author: "李四"},
+			{Title: "协程学习", Author: "王老五"},
+		},
 	}
 
-	t := template.Must(template.New("user").Parse(tpl))
+	t := template.Must(template.New("page").Parse(tpl))
 
-	file, err := os.Create("output.html")
+	outputPath := filepath.Join(`D:\py file\Go_learn_file\Study\src\ch13\`, "output.html")
+	file, err := os.Create(outputPath)
 	if err != nil {
 		fmt.Println("创建失败")
 		return
 	}
 	defer file.Close()
 
-	err = t.Execute(file, user)
+	err = t.Execute(file, page)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("注入失败")
+		return
 	}
 }

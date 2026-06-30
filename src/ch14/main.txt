@@ -1,0 +1,51 @@
+package mian
+
+//递归和循环在一定条件下能相互转换：线性结构，且for循环更加直接
+//所以对于广度搜索，可以使用递归，但是对于需要状态回退的深度搜索，就必须需要栈，递归先天带栈，所以深度搜索时优先使用栈
+
+import (
+	"fmt"
+	"golang.org/x/net/html"
+	"os"
+)
+
+func main() {
+
+}
+
+func visit(links []string, n *html.Node) []string {//初始条件
+	//终止条件
+	if n == nil {
+		return links
+	}
+	//操作
+	if n.Type == html.ElementNode && n.Data == "a" {
+		for _, a := range n.Attr {
+			if a.Key == "href" {
+				links = append(links, a.Val)
+			}
+		}
+	}
+
+	//状态更新-双递归-深度优先搜索
+	links = visit(links, c.FirstChild)
+	links = visit(links, c.NextSibling)
+	return links
+}
+
+func visit(links []string, n *html.Node) []string {
+	if n.Type == html.ElementNode && n.Data == "a" {
+		for _, a := range n.Attr {
+			if a.Key == "href" {
+				links = append(links, a.Val)
+			}
+		}
+	}
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		links = visit(links, c)
+	}
+	return links
+}
+
+
+
