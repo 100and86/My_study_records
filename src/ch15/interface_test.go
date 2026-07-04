@@ -58,6 +58,19 @@ func (c *counteWriter) Write(p []byte) (int, error) {
 	*c.n += int64(n)
 	return n, err
 }
+
+// Write方法简单实现
+type Memory struct {
+	buf []byte
+}
+
+var _ io.Writer = (*Memory)(nil) //构造T类型的指针并初始化为nil
+
+func (w *Memory) Write(p []byte) (int, error) {
+	w.buf = append(w.buf, p...)
+	return len(p), nil
+}
+
 func TestNewReader(t *testing.T) {
 	input := `
 <!doctype html>
@@ -70,12 +83,13 @@ func TestNewReader(t *testing.T) {
 		<a href="https://example.com">example</a>
 	</body>
 </html>`
-	doc, err := html.Parse(NewReader(input))
+	doc, err := html.Parse(NewReader(input)) //将字符串转换为io.Reader，之后变换为可遍历的html树
 	if err != nil {
 		panic(err)
 	}
 	forEachNode(doc, startElement, nil)
 }
+
 func forEachNode(n *html.Node, pre, post func(n *html.Node)) {
 	if pre != nil {
 		pre(n)
@@ -130,4 +144,35 @@ func (str *StringReader) Read(p []byte) (int, error) {
 
 func NewReader(str string) io.Reader {
 	return &StringReader{s: str}
+}
+
+type Limitstr struct {
+	r     io.Reader
+	num   int
+	limit int
+}
+
+func LimitReader(r io.Reader, n int64) io.Reader {
+	return &Limitstr{r: r, limit: int(n)}
+}
+func (Lstr *Limitstr) Read(p []byte) (int, error) {
+	if len(p) == 0 {
+		return 0, nil
+	}
+
+	if Lstr.num >= Lstr.limit {
+		return 0, io.EOF
+	}
+
+	remain := Lstr.limit - Lstr.num
+
+	if len(p) > remain {
+		p = p[:remain]
+	}
+
+	n, err := Lstr.r.Read(p)
+
+	Lstr.num += n //读到的位置
+	return n, err
+
 }
