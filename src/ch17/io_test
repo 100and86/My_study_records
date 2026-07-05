@@ -1,0 +1,45 @@
+package io_test
+
+import (
+	"bufio"
+	"bytes"
+	"fmt"
+	"io"
+	"os"
+)
+
+func TestIO() {
+	//实际创建类
+	`bytes.Reader:一个只读数据源，包装一个字节切片
+	包含:io.Reader,并实现了 io.Reader、io.ReaderAt、io.Seeker`
+	data := []byte("Hello, world!")
+	reader := bytes.NewReader(data)
+
+	//实际创建类
+	`bytes.Buffer:可读可写的字节缓冲区，常用于字符串的构建器：在需要多次拼接字符串或字节时，比直接用 + 或多次分配更高效。
+	内部维护一个动态的字节切片，可以随时追加数据，也可以从中读取数据
+	包含io.Writer、io.Reader
+	*读取时也会移动游标，但可以通过 Bytes() 或 String() 直接获取全部内容（不移动游标）`
+	var buf bytes.Buffer //空缓冲区
+	buf := bytes.NewBuffer([]byte("initial data"))//用法
+	fmt.Fprint(buf, "hello")
+	fmt.Fprint(buf, ",Tom")
+	fmt.Println(buf.String())
+	//包装类
+	`bufio.Scanner:Scanner 是一个扫描器，它从 io.Reader(比如文件、网络连接、或 bytes.Reader/bytes.Buffer)中读取数据，并按分隔符（默认是换行符 \n,也就是一行）切割成 token,内部有一个缓冲区（默认 64KB),单行超过缓冲区大小，会报错`
+	file, _ := os.Open("data.txt")
+	scanner := bufio.NewScanner(file)
+	data := []byte("Hello, world!")
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	scanner.Split(bufio.ScanWords)                  //切换为按单词读取
+	for scanner.Scan() {
+		/*   ·····*/
+		fmt.Println(scanner.Text())
+	}
+	`scanner.Scan()//推进到下一个 token,返回bool`
+	`scanner.Text():获取当前token`
+	`scanner.Bytes():获取当前 token 的字节切片。`
+	`scanner.Err()：检查扫描过程中是否发生错误。`
+	`scanner.Split(bufio.ScanWords) //切换为按单词读取,默认是按行读取`
+
+}

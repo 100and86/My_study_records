@@ -59,6 +59,8 @@ func (c *counteWriter) Write(p []byte) (int, error) {
 	return n, err
 }
 
+
+
 // Write方法简单实现
 type Memory struct {
 	buf []byte
@@ -70,6 +72,8 @@ func (w *Memory) Write(p []byte) (int, error) {
 	w.buf = append(w.buf, p...)
 	return len(p), nil
 }
+
+
 
 func TestNewReader(t *testing.T) {
 	input := `
@@ -109,6 +113,16 @@ func startElement(n *html.Node) {
 		fmt.Println(n.Data)
 	}
 }
+func NewReader(str string) io.Reader {
+	return &StringReader{s: str}
+}
+
+
+
+
+
+
+
 
 type StringReader struct {
 	s string
@@ -142,9 +156,10 @@ func (str *StringReader) Read(p []byte) (int, error) {
 //     }
 // }
 
-func NewReader(str string) io.Reader {
-	return &StringReader{s: str}
-}
+
+
+
+
 
 type Limitstr struct {
 	r     io.Reader
