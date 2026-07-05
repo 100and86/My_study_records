@@ -43,3 +43,30 @@ func TestIO() {
 	`scanner.Split(bufio.ScanWords) //切换为按单词读取,默认是按行读取`
 
 }
+`#os.Stdin虽然是*os.File 这个类型，其确实既有 Read 方法，也有 Write 方法；但某个具体的 *os.File 值到底能不能读、能不能写，要看它背后的“文件描述符”是用什么模式打开的。
+#这里讲一下普通文件怎么控制“读 / 写 / 创建”？
+- os.OpenFile(name string, flag int, perm FileMode)
+##flag:控制打开方式
+### O_RDONLY(只读)、O_WRONLY（只写）、O_RDWR（可读可写） 三者必须且只能指定一个:
+// 只读
+f, err := os.OpenFile("a.txt", os.O_RDONLY, 0)
+f, err := os.OpenFile("a.txt",)//默认只读
+// 只写
+f, err := os.OpenFile("a.txt", os.O_WRONLY, 0)
+// 可读可写
+f, err := os.OpenFile("a.txt", os.O_RDWR, 0)
+
+### O_CREATE、O_APPEND、O_TRUNC 可以用 | 组合进去
+O_CREATE 表示：如果文件不存在，就创建它。
+// 不存在就创建，只写
+f, err := os.OpenFile("a.txt", os.O_CREATE|os.O_WRONLY, 0644)
+// 不存在就创建，可读可写
+f, err := os.OpenFile("a.txt", os.O_CREATE|os.O_RDWR, 0644)
+//只读一般不与创建组合，很奇怪
+
+### f, err := os.Create("a.txt")创建或清空文件，然后!读!写!,如果成功，返回的文件描述符模式是 O_RDWR
+大致等价于：f, err := os.OpenFile("a.txt", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0666)
+### f, err := os.OpenFile("access.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+常见日志追加写入方式：不存在就创建、追加、只写
+### f, err := os.OpenFile("a.txt", os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0644)
+O_EXCL 通常和 O_CREATE 一起用，表示：文件必须不存在；如果已经存在，就报错。

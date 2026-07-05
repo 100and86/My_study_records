@@ -168,7 +168,7 @@ type Limitstr struct {
 }
 
 func LimitReader(r io.Reader, n int64) io.Reader {
-	return &Limitstr{r: r, limit: int(n)}
+	return &Limitstr{r: r, limit: int(n)}//指针接受者，所以必须传指针，这里不会自动解/取地址，只看静态类型方法
 }
 func (Lstr *Limitstr) Read(p []byte) (int, error) {
 	if len(p) == 0 {
