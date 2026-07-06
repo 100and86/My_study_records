@@ -90,4 +90,5 @@ fmt.Scanf("年龄:%d, 身高:%d", &age, &height)
 
 `总之就是必须与模板一样`
 
+`fmt.Sscanf(s, "%f%s", &value, &unit)`:解析字符串
 `Scanf 默认不会自动跳过换行符，如果在循环中使用，或者之前用过 Scanln，换行符（\n）可能会残留在缓冲区里，导致下一次 Scanf 读到空数据。解决办法通常是在格式字符串前面加个空格，如 " %d"，或者用 bufio.Reader 配合使用。`
